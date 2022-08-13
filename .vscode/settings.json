@@ -1,0 +1,33 @@
+{
+    "factorio.versions": [
+        {
+            "name": "Steam",
+            "factorioPath": "~/Library/Application Support/Steam/steamapps/common/Factorio/factorio.app/Contents/MacOS/factorio"
+        },
+        {
+            "name": "System",
+            "factorioPath": "/Applications/factorio.app/Contents/MacOS/factorio",
+            "active": true
+        }
+    ],
+    "Lua.diagnostics.globals": [
+        "data",
+        "mods",
+        "table_size",
+        "log",
+        "localised_print",
+        "serpent",
+        "global",
+        "__DebugAdapter",
+        "__Profiler"
+    ],
+    "Lua.diagnostics.disable": [
+        "undefined-field"
+    ],
+    "Lua.runtime.version": "Lua 5.2",
+    "Lua.workspace.library": [
+        "/Applications/factorio.app/Contents/data",
+        "/Applications/factorio.app/Contents/data/core/lualib",
+        ".vscode/factorio"
+    ]
+}
