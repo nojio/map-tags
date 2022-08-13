@@ -1,9 +1,6 @@
-local gui = require("__flib__.gui")
--- local mod_gui = require("__core__.lualib.mod-gui")
--- local table = require("__flib__.table")
+require("scripts/util")
 
--- ---------------------------------------------------------------------------------------------------------------------
--- GUI CODE
+local gui = require("__flib__.gui")
 
 local chart_tag_list_gui = {}
 
@@ -17,11 +14,15 @@ local function find_all_chart_tags()
     return chart_tags
 end
 
-local function create_content()
+local function create_content(compact_list)
   local records = {}
 
   local chart_tags = find_all_chart_tags()
-  for _, tag in pairs(chart_tags[1]) do
+  -- TODO: ???
+  chart_tags = chart_tags[1]
+  table.sort(chart_tags, Comp_tag_number)
+
+  for _, tag in pairs(chart_tags) do
     local sprite = nil
     if tag.icon then
       sprite = tag.icon.type .. "/" .. tag.icon.name
@@ -36,10 +37,12 @@ local function create_content()
         }
       }
     )
-    table.insert(records, { type = "label", caption = tag.text })
-    table.insert(records, { type = "label", caption = tag.last_user.name })
-    table.insert(records, { type = "label", caption = tag.surface.name })
-    table.insert(records, { type = "label", caption = tag.tag_number })
+    if not compact_list then
+      table.insert(records, { type = "label", caption = tag.text })
+      -- table.insert(records, { type = "label", caption = tag.last_user.name })
+      -- table.insert(records, { type = "label", caption = tag.surface.name })
+      -- table.insert(records, { type = "label", caption = tag.tag_number })
+    end
   end
 
   return records
@@ -47,6 +50,19 @@ end
 
 
 function chart_tag_list_gui.build(player, player_table)
+  local width = settings.get_player_settings(player)["map_tags_width"].value
+  local height = settings.get_player_settings(player)["map_tags_height"].value
+  local compact_list = settings.get_player_settings(player)["map_tags_compact_list"].value
+  local tag_contents = create_content(compact_list)
+
+  local column_count = 2
+  local padding = 10
+  if compact_list then
+    width = 90
+    column_count = 1
+    padding = 25
+  end
+
   local refs = gui.build(player.gui.screen, {
     {
       type = "frame",
@@ -56,7 +72,7 @@ function chart_tag_list_gui.build(player, player_table)
         on_closed = "close"
       },
       {type = "flow", ref = {"titlebar_flow"}, children = {
-        {type ="label", style = "frame_title", caption = "Tags", ignored_by_interaction = true},
+        {type ="label", style = "frame_title", caption = {"map_tags.title"}, ignored_by_interaction = true},
         {type = "empty-widget", style = "flib_titlebar_drag_handle", ignored_by_interaction = true},
         {
           type = "sprite-button",
@@ -71,36 +87,24 @@ function chart_tag_list_gui.build(player, player_table)
         }
       }},
       {type = "frame", style = "inside_shallow_frame", direction = "vertical",
-        -- {
-        --   type = "flow",
-        --   style_mods = {left_margin = 12, right_margin = 12, bottom_margin = 12},
-        --   direction = "vertical",
-        --   -- elem_mods = {visible = false},
-        --   elem_mods = {visible = true},
-        --   ref = {"chart_tags_flow"},
-        -- },
         {
             type = "scroll-pane",
             style = "flib_naked_scroll_pane_no_padding",
             ref = { "scroll_pane" },
-            vertical_scroll_policy = "always",
-            style_mods = {width = 300, height = 400, padding = 6},
+            vertical_scroll_policy = "auto",
+            style_mods = {width = width, height = height, padding = padding},
             children = {
-                {
-                    type = "flow",
-                    direction = "vertical",
-                    children = {
-                      {
-                        type = "label",
-                        caption = "this is label"
-                      },
-                      {
-                        type = "table",
-                        column_count = 5,
-                        children = create_content()
-                      },
-                    }
+              {
+                type = "flow",
+                direction = "vertical",
+                children = {
+                  {
+                    type = "table",
+                    column_count = column_count,
+                    children = tag_contents
+                  }
                 }
+              }
             }
         },
         {
@@ -113,7 +117,7 @@ function chart_tag_list_gui.build(player, player_table)
             type = "flow",
             style_mods = {vertical_align = "center", left_margin = 8},
             ref = {"subfooter_flow"},
-            {type = "label", name = "items_left_label", caption = "footer a"},
+            {type = "label", name = "items_left_label", caption = #tag_contents .. " tags"},
             {type = "empty-widget", style = "flib_horizontal_pusher"},
           }
         }
@@ -121,12 +125,13 @@ function chart_tag_list_gui.build(player, player_table)
     }
   })
 
-  refs.subfooter_flow.items_left_label.caption = "hoge items left hogehogehoge"
+  -- refs.subfooter_flow.items_left_label.caption = "hoge items left hogehogehoge"
 
   refs.titlebar_flow.drag_target = refs.window
   refs.window.force_auto_center()
   player.opened = refs.window
 
+  -- TODO: kore hituyou? ref=mawari zenpan
   player_table.chart_tag_list = {
     refs = refs,
     state = {
