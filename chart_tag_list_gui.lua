@@ -1,8 +1,22 @@
 require("scripts/util")
 
 local gui = require("__flib__.gui")
+local tablex = require("__flib__.table")
 
 local chart_tag_list_gui = {}
+
+local sort_modes = tablex.invert{
+  "alphabetically",
+  "recently_added"
+}
+
+function Update_mode_radios(gui_data)
+  local mode = gui_data.state.mode
+  local subfooter_flow = gui_data.refs.subfooter_flow
+
+  subfooter_flow.alphabetically_radiobutton.state = mode == sort_modes.alphabetically
+  subfooter_flow.recently_added_radiobutton.state = mode == sort_modes.recently_added
+end
 
 local function find_all_chart_tags()
     local chart_tags = {}
@@ -110,15 +124,35 @@ function chart_tag_list_gui.build(player, player_table)
         {
           type = "frame",
           style = "subfooter_frame",
-          -- elem_mods = {visible = false},
-          elem_mods = {visible = true},
-          ref = {"subfooter_frame"},
           {
             type = "flow",
+            direction = "vertical",
             style_mods = {vertical_align = "center", left_margin = 8},
             ref = {"subfooter_flow"},
-            {type = "label", name = "items_left_label", caption = #tag_contents .. " tags"},
-            {type = "empty-widget", style = "flib_horizontal_pusher"},
+            children = {
+            {
+              type = "radiobutton",
+              name = "alphabetically_radiobutton",
+              caption = "Alphabetically",
+              state = true,
+              actions = {
+                on_checked_state_changed = "change_mode"
+              },
+              tags = {mode = sort_modes.alphabetically},
+              {type = "empty-widget", style = "flib_horizontal_pusher"},
+            },
+            {
+              type = "radiobutton",
+              name = "recently_added_radiobutton",
+              caption = "Recently added",
+              state = false,
+              actions = {
+                on_checked_state_changed = "change_mode"
+              },
+              tags = {mode = sort_modes.recently_added},
+              {type = "empty-widget", style = "flib_horizontal_pusher"},
+            },
+            }
           }
         }
       }
@@ -135,6 +169,7 @@ function chart_tag_list_gui.build(player, player_table)
   player_table.chart_tag_list = {
     refs = refs,
     state = {
+      mode = sort_modes.alphabetically,
       chart_tags = {},
       visible = false
     }
