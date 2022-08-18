@@ -7,14 +7,15 @@ local chart_tag_list_gui = require("chart_tag_list_gui")
 -- ACTION HANDLERS
 
 local function change_sort_mode(e)
+  local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
   local gui_data = player_table.chart_tag_list
   local state = gui_data.state
 
   state.mode = gui.get_tags(e.element).mode
 
+  chart_tag_list_gui.build(player, player_table)
   Update_mode_radios(gui_data)
-  -- update_todos(gui_data)
 end
 
 chart_tag_list_gui.actions = {

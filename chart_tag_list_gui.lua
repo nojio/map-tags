@@ -28,13 +28,18 @@ local function find_all_chart_tags()
     return chart_tags
 end
 
-local function create_content(compact_list)
+local function create_content(compact_list, sort_mode)
   local records = {}
 
   local chart_tags = find_all_chart_tags()
   -- TODO: ???
   chart_tags = chart_tags[1]
-  table.sort(chart_tags, Comp_tag_number)
+
+  if sort_mode and sort_mode == sort_modes.alphabetically then
+    table.sort(chart_tags, Comp_alphabetically)
+  else
+    table.sort(chart_tags, Comp_tag_number)
+  end
 
   for _, tag in pairs(chart_tags) do
     local sprite = nil
@@ -67,7 +72,13 @@ function chart_tag_list_gui.build(player, player_table)
   local width = settings.get_player_settings(player)["map_tags_width"].value
   local height = settings.get_player_settings(player)["map_tags_height"].value
   local compact_list = settings.get_player_settings(player)["map_tags_compact_list"].value
-  local tag_contents = create_content(compact_list)
+
+  local sort_mode = {}
+  if player_table and player_table.chart_tag_list then
+    sort_mode = player_table.chart_tag_list.state.mode
+  end
+
+  local tag_contents = create_content(compact_list, sort_mode)
 
   local column_count = 2
   local padding = 10
@@ -165,11 +176,14 @@ function chart_tag_list_gui.build(player, player_table)
   refs.window.force_auto_center()
   player.opened = refs.window
 
-  -- TODO: kore hituyou? ref=mawari zenpan
+  if not sort_mode then
+    sort_mode = sort_modes.alphabetically
+  end
+
   player_table.chart_tag_list = {
     refs = refs,
     state = {
-      mode = sort_modes.alphabetically,
+      mode = sort_mode,
       chart_tags = {},
       visible = false
     }
