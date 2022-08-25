@@ -28,7 +28,7 @@ local function find_all_chart_tags()
     return chart_tags
 end
 
-local function create_content(compact_list, sort_mode)
+local function create_content(sort_mode)
   local records = {}
 
   local chart_tags = find_all_chart_tags()
@@ -56,12 +56,11 @@ local function create_content(compact_list, sort_mode)
         }
       }
     )
-    if not compact_list then
-      table.insert(records, { type = "label", caption = tag.text })
-      -- table.insert(records, { type = "label", caption = tag.last_user.name })
-      -- table.insert(records, { type = "label", caption = tag.surface.name })
-      -- table.insert(records, { type = "label", caption = tag.tag_number })
-    end
+
+    table.insert(records, { type = "label", caption = tag.text })
+    -- table.insert(records, { type = "label", caption = tag.last_user.name })
+    -- table.insert(records, { type = "label", caption = tag.surface.name })
+    -- table.insert(records, { type = "label", caption = tag.tag_number })
   end
 
   return records
@@ -71,22 +70,16 @@ end
 function chart_tag_list_gui.build(player, player_table)
   local width = settings.get_player_settings(player)["map_tags_width"].value
   local height = settings.get_player_settings(player)["map_tags_height"].value
-  local compact_list = settings.get_player_settings(player)["map_tags_compact_list"].value
 
   local sort_mode = {}
   if player_table and player_table.chart_tag_list then
     sort_mode = player_table.chart_tag_list.state.mode
   end
 
-  local tag_contents = create_content(compact_list, sort_mode)
+  local tag_contents = create_content(sort_mode)
 
   local column_count = 2
   local padding = 10
-  if compact_list then
-    width = 90
-    column_count = 1
-    padding = 25
-  end
 
   local refs = gui.build(player.gui.screen, {
     {

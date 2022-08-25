@@ -77,9 +77,4 @@ gui.hook_events(function(e)
   end
 end)
 
--- event.on_chart_tag_added(function(e)
---   local player_table = global.players[e.player_index]
---   local gui_data = player_table.chart_tag_list
--- end)
-
 if script.active_mods["gvv"] then require("__gvv__.gvv")() end

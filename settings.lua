@@ -12,11 +12,5 @@ data:extend{
         setting_type = "runtime-per-user",
         minimum_value = 100,
         default_value = 400
-    },
-    {
-        type = "bool-setting",
-        name = "map_tags_compact_list",
-        setting_type = "runtime-per-user",
-        default_value = false
     }
 }
