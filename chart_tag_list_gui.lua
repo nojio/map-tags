@@ -1,22 +1,8 @@
 require("scripts/util")
 
 local gui = require("__flib__.gui")
-local tablex = require("__flib__.table")
 
 local chart_tag_list_gui = {}
-
-local sort_modes = tablex.invert{
-  "alphabetically",
-  "recently_added"
-}
-
-function Update_mode_radios(gui_data)
-  local mode = gui_data.state.mode
-  local subfooter_flow = gui_data.refs.subfooter_flow
-
-  subfooter_flow.alphabetically_radiobutton.state = mode == sort_modes.alphabetically
-  subfooter_flow.recently_added_radiobutton.state = mode == sort_modes.recently_added
-end
 
 local function find_all_chart_tags()
     local chart_tags = {}
@@ -28,18 +14,13 @@ local function find_all_chart_tags()
     return chart_tags
 end
 
-local function create_content(sort_mode)
+local function create_content()
   local records = {}
 
   local chart_tags = find_all_chart_tags()
-  -- TODO: ???
-  chart_tags = chart_tags[1]
 
-  if sort_mode and sort_mode == sort_modes.alphabetically then
-    table.sort(chart_tags, Comp_alphabetically)
-  else
-    table.sort(chart_tags, Comp_tag_number)
-  end
+  chart_tags = chart_tags[1]
+  table.sort(chart_tags, Comp_alphabetically)
 
   for _, tag in pairs(chart_tags) do
     local sprite = nil
@@ -71,12 +52,7 @@ function chart_tag_list_gui.build(player, player_table)
   local width = settings.get_player_settings(player)["map_tags_width"].value
   local height = settings.get_player_settings(player)["map_tags_height"].value
 
-  local sort_mode = {}
-  if player_table and player_table.chart_tag_list then
-    sort_mode = player_table.chart_tag_list.state.mode
-  end
-
-  local tag_contents = create_content(sort_mode)
+  local tag_contents = create_content()
 
   local column_count = 2
   local padding = 10
@@ -124,40 +100,6 @@ function chart_tag_list_gui.build(player, player_table)
                 }
               }
             }
-        },
-        {
-          type = "frame",
-          style = "subfooter_frame",
-          {
-            type = "flow",
-            direction = "vertical",
-            style_mods = {vertical_align = "center", left_margin = 8},
-            ref = {"subfooter_flow"},
-            children = {
-            {
-              type = "radiobutton",
-              name = "alphabetically_radiobutton",
-              caption = "Alphabetically",
-              state = true,
-              actions = {
-                on_checked_state_changed = "change_mode"
-              },
-              tags = {mode = sort_modes.alphabetically},
-              {type = "empty-widget", style = "flib_horizontal_pusher"},
-            },
-            {
-              type = "radiobutton",
-              name = "recently_added_radiobutton",
-              caption = "Recently added",
-              state = false,
-              actions = {
-                on_checked_state_changed = "change_mode"
-              },
-              tags = {mode = sort_modes.recently_added},
-              {type = "empty-widget", style = "flib_horizontal_pusher"},
-            },
-            }
-          }
         }
       }
     }
@@ -169,14 +111,9 @@ function chart_tag_list_gui.build(player, player_table)
   refs.window.force_auto_center()
   player.opened = refs.window
 
-  if not sort_mode then
-    sort_mode = sort_modes.alphabetically
-  end
-
   player_table.chart_tag_list = {
     refs = refs,
     state = {
-      mode = sort_mode,
       chart_tags = {},
       visible = false
     }
