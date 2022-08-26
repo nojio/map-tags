@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "title": "Map Tags",
   "author": "nojio",
-  "description": "Add Map Tag List GUI.",
+  "description": "Add Map tag list GUI.",
   "factorio_version": "1.1",
   "dependencies": [
     "base >= 1.1.0",

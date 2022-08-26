@@ -47,7 +47,6 @@ local function create_content()
   return records
 end
 
-
 function chart_tag_list_gui.build(player, player_table)
   local width = settings.get_player_settings(player)["map_tags_width"].value
   local height = settings.get_player_settings(player)["map_tags_height"].value
@@ -111,19 +110,15 @@ function chart_tag_list_gui.build(player, player_table)
   refs.window.force_auto_center()
   player.opened = refs.window
 
-  player_table.chart_tag_list = {
-    refs = refs,
-    state = {
-      chart_tags = {},
-      visible = false
-    }
+  player_table.map_tags = {
+    refs = refs
   }
 end
 
 function chart_tag_list_gui.open(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
-  local gui_data = player_table.chart_tag_list
+  local gui_data = player_table.map_tags
 
   gui_data.refs.window.visible = true
   player.opened = gui_data.refs.window
@@ -132,7 +127,7 @@ end
 function chart_tag_list_gui.close(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
-  local gui_data = player_table.chart_tag_list
+  local gui_data = player_table.map_tags
 
   gui_data.refs.window.visible = false
   if player and player.opened then

@@ -29,7 +29,7 @@ event.on_player_created(function(e)
   gui.add(mod_gui.get_button_flow(player), {
     type = "button",
     style = mod_gui.button_style,
-    caption = "Tag List",
+    caption = "Tags",
     actions = {
       on_click = "toggle_chart_tag_list_gui"
     }
@@ -41,7 +41,7 @@ end)
 local function toggle_chart_tag_list_gui(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
-  local visible = player_table.chart_tag_list.refs.window.visible
+  local visible = player_table.map_tags.refs.window.visible
   if visible then
     chart_tag_list_gui.close(e)
   else
