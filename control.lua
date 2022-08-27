@@ -29,8 +29,19 @@ end)
 
 local function toggle_chart_tag_list_gui(e)
   local player = game.get_player(e.player_index)
+
+  -- when a save file is loaded that previously didn't contain the mod
+  if not global.players[e.player_index] then
+    global.players[e.player_index] = {}
+  end
+
   local player_table = global.players[e.player_index]
-  local visible = player_table.map_tags.refs.window.visible
+
+  local visible = false
+  if player_table.map_tags then
+    visible = player_table.map_tags.refs.window.visible
+  end
+
   if visible then
     chart_tag_list_gui.close(e)
   else
