@@ -26,14 +26,14 @@ event.on_player_created(function(e)
 
   -- CREATE GUIS
 
-  gui.add(mod_gui.get_button_flow(player), {
-    type = "button",
-    style = mod_gui.button_style,
-    caption = "Tags",
-    actions = {
-      on_click = "toggle_chart_tag_list_gui"
-    }
-  })
+  -- gui.add(mod_gui.get_button_flow(player), {
+  --   type = "button",
+  --   style = mod_gui.button_style,
+  --   caption = "Tags",
+  --   actions = {
+  --     on_click = "toggle_chart_tag_list_gui"
+  --   }
+  -- })
 
   chart_tag_list_gui.build(player, player_table)
 end)
@@ -61,6 +61,18 @@ gui.hook_events(function(e)
     else
       chart_tag_list_gui.actions[action](e)
     end
+  end
+end)
+
+-- Keyboard shortcuts
+script.on_event("map_tags_toggle_gui", function(e)
+  toggle_chart_tag_list_gui(e)
+end)
+
+-- Buttom Bar Shortcuts Clicked
+script.on_event(defines.events.on_lua_shortcut, function(e)
+  if e.prototype_name == "map_tags_shorcut" then
+    toggle_chart_tag_list_gui(e)
   end
 end)
 

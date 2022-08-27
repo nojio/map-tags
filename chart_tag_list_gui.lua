@@ -14,7 +14,26 @@ local function find_all_chart_tags()
     return chart_tags
 end
 
-local function create_content()
+local function get_sprite_path_from_icon(icon, player)
+  local sprite_path_type = icon.type
+  local sprite_path_name = icon.name
+
+  -- define sprite path type ( https://lua-api.factorio.com/latest/Concepts.html#SpritePath )
+  if sprite_path_type == "virtual" then
+    sprite_path_type = "virtual-signal"
+  end
+
+  local sprite_path = sprite_path_type .. "/" .. sprite_path_name
+
+  if not game.is_valid_sprite_path(sprite_path) then
+    player.print("[Map Tags]ERROR: " .. sprite_path ..  " is invalid sprite path.")
+    return nil
+  end
+
+  return sprite_path
+end
+
+local function create_content(player)
   local records = {}
 
   local chart_tags = find_all_chart_tags()
@@ -23,15 +42,15 @@ local function create_content()
   table.sort(chart_tags, Comp_alphabetically)
 
   for _, tag in pairs(chart_tags) do
-    local sprite = nil
+    local sprite_path = nil
     if tag.icon then
-      sprite = tag.icon.type .. "/" .. tag.icon.name
+      sprite_path = get_sprite_path_from_icon(tag.icon, player)
     end
 
     table.insert(records,
       {
         type = "sprite-button",
-        sprite = sprite,
+        sprite = sprite_path,
         actions = {
             on_click = { action = "zoom_position", position = tag.position }
         }
@@ -51,7 +70,7 @@ function chart_tag_list_gui.build(player, player_table)
   local width = settings.get_player_settings(player)["map_tags_width"].value
   local height = settings.get_player_settings(player)["map_tags_height"].value
 
-  local tag_contents = create_content()
+  local tag_contents = create_content(player)
 
   local column_count = 2
   local padding = 10
@@ -122,6 +141,8 @@ function chart_tag_list_gui.open(e)
 
   gui_data.refs.window.visible = true
   player.opened = gui_data.refs.window
+
+  player.set_shortcut_toggled("map_tags_shorcut", true)
 end
 
 function chart_tag_list_gui.close(e)
@@ -133,6 +154,8 @@ function chart_tag_list_gui.close(e)
   if player and player.opened then
     player.opened = nil
   end
+
+  player.set_shortcut_toggled("map_tags_shorcut", false)
 end
 
 return chart_tag_list_gui
