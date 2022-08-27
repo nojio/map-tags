@@ -24,17 +24,6 @@ event.on_player_created(function(e)
 
   local player = game.get_player(e.player_index)
 
-  -- CREATE GUIS
-
-  -- gui.add(mod_gui.get_button_flow(player), {
-  --   type = "button",
-  --   style = mod_gui.button_style,
-  --   caption = "Tags",
-  --   actions = {
-  --     on_click = "toggle_chart_tag_list_gui"
-  --   }
-  -- })
-
   chart_tag_list_gui.build(player, player_table)
 end)
 
